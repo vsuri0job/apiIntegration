@@ -89,6 +89,7 @@ Route::group(['middleware' => ['auth','active', 'checksubscribed']], function()
 	Route::get('manage_site', 'ManageSiteController@index');
 	Route::get('login_google', 'ManageSiteController@login_google')->name( 'login_google' );
 	Route::get('verify_google', 'ManageSiteController@verify_google')->name( 'verify_google' );
+	Route::get('google_business_list', 'ManageSiteController@google_business_list')->name( 'google_blist' );
 
 	Route::get('manage_site/add', 'ManageSiteController@add');
 	Route::get('manage_site/add_social_page', 'ManageSiteController@add_social_page'); //TEST ROUTE

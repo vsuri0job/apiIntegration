@@ -37,3 +37,12 @@ $client->addScope( $scopes );
 return $client;
 
 https://www.googleapis.com/auth/plus.business.manage
+
+https://console.developers.google.com/apis/credentials?project=review-champ-live
+https://developers.google.com/identity/protocols/OAuth2WebServer
+https://developers.google.com/identity/protocols/OAuth2UserAgent#example
+https://developers.google.com/identity/protocols/OAuth2UserAgent#incrementalAuth
+https://developers.google.com/my-business/samples/categories-call
+https://laraveldaily.com/how-to-use-external-classes-and-php-files-in-laravel-controller/
+
+https://github.com/Avtonom/google-api-my-business-php-client/blob/master/composer.json

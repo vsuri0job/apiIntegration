@@ -11,6 +11,7 @@ use App\Social;
 use App\Socialmedia;
 use Illuminate\Support\Facades\Input;
 use Google_Client;
+use Google_Service;
 
 class ManageSiteController extends Controller
 {
@@ -82,6 +83,24 @@ class ManageSiteController extends Controller
         }
         redirect('/');
         exit;
+    }
+
+    public function google_business_list(){
+        $access_token = Auth::user()->google_access_token;
+        $refresh_token = Auth::user()->google_refresh_token;
+        $client = $this->getGoogleClient();
+        $client->setAccessToken($access_token);        
+        if ($client->isAccessTokenExpired()) {
+            $client->fetchAccessTokenWithRefreshToken( $refresh_token );
+            $access_token = $client->getAccessToken();
+            $opt = array();
+            $opt[ 'google_access_token' ] = json_encode($access_token);            
+            $user_id=Auth::user()->id;
+            User::where('id', $user_id)
+                  ->update($opt);            
+        }
+        $service = new Google_Service_Oauth2($client);
+        $analytics = new Google_Service_Analytics($client);
     }
     /*
     *Method: index
