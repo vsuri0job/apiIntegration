@@ -1,0 +1,58 @@
+/*Feather icons */
+/*Feather CSS */
+.fonticon-container > .fonticon-wrap {
+       float: left;
+    width: 0px!important;
+    height: 0px!important;
+    line-height:0.8rem!important;
+    text-align: center;
+    border-radius: 0.1875rem!important;
+     margin-right: 1rem!important;
+     margin-bottom: 1.5rem!important;
+}
+ .fonticon-container:hover i {
+   font-size: 2.8rem!important;
+   transform:none!important;
+   color: #2b0303!important;
+  }
+ .fonticon-container > .fonticon-wrap > i {
+   font-size: 1.6rem!important;
+}
+.navbar-light {
+    background: #0c1f3a!important;
+}
+.header-navbar.navbar-border {
+    border-bottom: 1px solid #0c1f3a!important;
+}
+.header-navbar .navbar-header .navbar-brand .brand-logo {
+       margin: -4px 2px 7px 4px!important;
+       width: 100%!important;
+
+    }
+.main-menu.menu-light .navigation {
+  
+    margin-top: 21%!important;
+
+    background: #0c1f3a!important;
+}
+}
+.main-menu.menu-light {
+    background: #0c1f3a!important;
+}
+.main-menu.menu-light {
+    color: #404E67!important;
+    background: #0c1f3a!important;
+}
+.main-menu.menu-light .navigation li a {
+    color: #ffffff!important;
+}
+.main-menu.menu-light .navigation .navigation-header {
+    color: #ffffff!important;
+   }
+   .navbar-light .navbar-nav .nav-link {
+    color: #ffffff!important;
+}
+.main-menu.menu-light .navigation > li.hover > a, .main-menu.menu-light .navigation > li:hover > a, .main-menu.menu-light .navigation > li.active > a {
+   
+    background-color: #307bc4!important;
+}

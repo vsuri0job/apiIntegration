@@ -1,0 +1,39 @@
+ngrok http -host-header=ladash.com ladash.com:80
+
+imsadvertisingseo@gmail.com
+IMSAdvertising123
+
+ ./ngrok http -host-header=rchamp.com rchamp.com:80
+
+harish@mobilyte.com
+@India#1
+
+http://f9bee65f.ngrok.io/manage/connect-social-pages
+
+ALTER TABLE `users` CHANGE `stripe_subscription_end` `stripe_subscription_end` TIMESTAMP NOT NULL;
+ALTER TABLE `users`  ADD `google_access_token` TEXT NULL DEFAULT NULL  AFTER `remember_token`,  
+ADD `google_refresh_token` TEXT NULL DEFAULT NULL  AFTER `google_access_token`;
+
+ALTER TABLE `users` ADD `google_token` TEXT NULL AFTER `remember_token`;
+
+
+$scopes = array();
+$scopes[] = "email";
+$scopes[] = "profile";
+$scopes[] = "https://www.googleapis.com/auth/adwords";
+$scopes[] = "https://www.googleapis.com/auth/analytics";
+$scopes[] = "https://www.googleapis.com/auth/analytics.edit";
+$scopes[] = "https://www.googleapis.com/auth/analytics.provision";
+$scopes[] = "https://www.googleapis.com/auth/analytics.manage.users";
+$redirect_uri = base_url('social/verify_google');
+$client = new Google_Client();
+$client->setApplicationName("Analytics Report");
+$client->setAccessType("offline");
+$client->setApprovalPrompt("force");
+$client->setClientId( GOOGLE_CLIENT_ID );
+$client->setClientSecret( GOOGLE_CLIENT_SECRET );
+$client->setRedirectUri($redirect_uri);
+$client->addScope( $scopes );
+return $client;
+
+https://www.googleapis.com/auth/plus.business.manage

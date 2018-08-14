@@ -1,0 +1,35 @@
+
+footer.share-footer {
+  color: #fff;
+  
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center; 
+  background-color: #2975c9 !important;
+  border-top: 8px solid #0c243e !important;
+  padding: 10px 0;
+  margin: 0;
+
+}
+.share-footer p {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 20px;
+  text-align: center;
+  padding-top: 30;
+  margin: 0;
+
+
+}
+
+.share-footer img {display: inline-block; margin: 0;}
+
+.share-box {
+  text-align: center; 
+  margin: 0 auto 30px auto;
+  max-width: 950px;
+  width: 100%;
+}

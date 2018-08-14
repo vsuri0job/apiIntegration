@@ -1,0 +1,98 @@
+url {
+  color: #1976d2;
+  font-style: italic;
+  font-size: 12px;
+  text-decoration: underline;
+}
+button.delete-social-page{
+  float: right;
+  margin: 0px 0px 0px 5px;
+  padding: 4px 5px;
+}
+.display-none {
+  display: none;
+}
+.p-0-30 {
+  padding: 0px 30px;
+}
+
+.p-0-25 {
+  padding: 2px 25px;
+}
+
+.mt-0-5{
+  margin-top: 0.5rem;
+}
+
+.rc-separator {
+  width: 100%;
+  height: 1px;
+  background: rgba(190, 190, 190, 0.4);
+  margin: 20px 0px 5px 0px;
+}
+
+.reviews-cards p {
+  font-size: 12px;
+}
+
+.reviews-cards .reviewer{
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #1976d2;
+}
+
+.reviews-cards {
+
+}
+
+.rc-social-reviews .card-header a span{
+  border-right: 1px solid #fff;
+}
+
+.rc-social-reviews .card-header a.btn-social:hover{
+  background-color: #000;
+}
+
+.rc-social-reviews .card-header a{
+  color: #fff !important;
+  border-color: #fff !important;
+}
+.rc-social-reviews .card-header {
+  padding: 0.5rem 0.5rem;
+  background: rgba(12, 31, 58, 0.7);
+  margin: 10px 0 0 0;
+}
+
+.rc-social-reviews.left a:before, .rc-social-reviews.left a:after {
+  left: 10px;
+  right: auto;
+}
+
+.social-title {
+  color: #fff;
+}
+.bg-fb {
+  background: #1976d2;
+}
+.bg-yelp {
+  background: #d32323;
+}
+.bg-google {
+  background: #f46174;
+}
+.bg-home-advisor {
+  background: #f7901e;
+}
+.social-rating{
+  font-size: 22px;
+  padding: 7px 0 0 0;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+#google-logout-button {
+  display: none;
+}

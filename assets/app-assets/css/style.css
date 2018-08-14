@@ -1,0 +1,244 @@
+body {
+	font-family: 'Open Sans', sans-serif !important;
+}
+.header-cnt {
+	color: #b11f24;
+	font-size: 22px;
+	font-weight: 500;
+	line-height: 1.5;
+	background: #cfcfcf;
+	padding: 10px 0;
+}
+.header-cnt .col-md-6:last-child {
+	text-align: right;
+	padding-top: 30px;
+}
+.header-cnt p {
+	margin: 0;
+}
+.header-cnt .phone a,  .header-cnt .phone a:hover,  .header-cnt .phone a:focus {
+	color: #000;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.5;
+	text-decoration: none;
+}
+.header-cnt .phone a:hover,  .header-cnt .phone a:focus {
+	text-decoration: underline;
+}
+.header-border {
+	height: 16px;
+	width: 100%;
+	border-bottom: 5px solid #cfcfcf;
+	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,1) 35%, rgba(199,218,237,1) 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,1) 35%, rgba(199,218,237,1) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,1) 35%, rgba(199,218,237,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#c7daed', GradientType=0 ); /* IE6-9 */
+}
+.content-wrap {
+	padding: 50px 0;
+}
+footer.share-footer {
+	color: #fff;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 20px;
+	text-align: center;
+	background-image: url("img/footer-bg.png");
+	background-repeat: repeat-x !important;
+	background-color: #2975c9 !important;
+	border-top: 8px solid #0c243e;
+	padding: 40px 0;
+	margin: 0;
+}
+.share-footer p {
+	color: #fff;
+	font-size: 14px;
+	font-weight: 700;
+	font-style: italic;
+	line-height: 20px;
+	text-align: center;
+	margin: 0;
+}
+.share-footer img {
+	display: inline-block;
+	margin: 0 0 20px 0;
+}
+.share-box {
+	text-align: center;
+	margin: 0 auto 30px auto;
+	max-width: 950px;
+	width: 100%;
+}
+.share-box h3 {
+	color: #444;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 26px;
+	margin: 0 0 15px 0;
+}
+.title-section {
+	color: #000;
+	font-size: 18px;
+	text-align: center;
+	margin: 0 auto;
+	max-width: 950px;
+	width: 100%;
+}
+.title-section h3 {
+	color: #444;
+	font-size: 40px;
+	font-weight: 700;
+	line-height: 45px;
+	margin: 0 0 5px 0;
+}
+h5.steps {
+	color: #fff;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 22px;
+	text-align: left;
+	background: #193068;
+	padding: 5px 7px 6px 7px;
+	margin: 0 0 10px 0;
+}
+h5.steps strong {
+	font-size: 20px;
+	font-weight: 700;
+}
+.review-bar {
+	color: #0c1e3c;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 1.5;
+	border: 3px solid #b5b5b5;
+	padding: 30px 30px 15px 30px;
+	margin: 0 0 60px 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+.review-bar p {
+	font-style: italic;
+	margin: 0 0 30px 0;
+}
+.review-bar a.myreview-btn {
+	color: #fff;
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 1.5;
+	text-decoration: none;
+	display: inline-block;
+	background: url("img/check-icon.png") no-repeat #193068;
+	background-position: 15px center;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	padding: 10px 15px 10px 35px;
+	margin: 0;
+}
+.social-box {
+	text-align: center;
+}
+.social-box ul,  .social-box li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.social-box ul {
+	display: inline-block;
+}
+.social-box li {
+	float: left;
+	padding: 0 10px;
+	margin: 30px 0 0 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+.social-box li p {
+	color: #262626;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 20px;
+	text-align: center;
+	margin: 0 auto;
+}
+.review-bar button.myreview-btn {
+	color: #fff;
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 1.5;
+	text-decoration: none;
+	display: inline-block;
+	background: url("check-icon.png") no-repeat #193068;
+	background-position: 15px center;
+	border: none;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	padding: 10px 15px 10px 35px;
+	margin: 0;
+}
+.review-bar button.myreview-btn:hover {
+	cursor: pointer;
+}
+.title-section {
+	color: #000;
+	font-size: 18px;
+	text-align: center;
+	margin: 0 auto;
+	max-width: 950px;
+	width: 100%;
+}
+.title-section h3 {
+	color: #444;
+	font-size: 40px;
+	font-weight: 700;
+	line-height: 45px;
+	margin: 0 0 5px 0;
+}
+.title-section h5 {
+	color: #444;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 30px;
+	margin: 0 0 5px 0;
+}
+ul.pagination {
+	margin: 0;
+	padding: 15px 15px;
+	display: inline-block;
+	list-style: none;
+}
+ul.pagination li {
+	float: left;
+	padding: 0 3px;
+}
+.widget-wrap {
+	width: 272px;
+	position: relative;
+	text-align: center;
+}
+.widget-wrap div.field {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	padding: 12px 0 0 11px;
+	margin: 0 auto;
+	width: 120px;
+	text-align: center;
+}
+.widget-wrap input {
+	text-align: center;
+	background: #ecedd9;
+	border: none;
+	box-shadow: 0px 1px 2px #000 inset;
+	padding: 0 5px;
+	margin: 0 auto;
+	height: 30px;
+	width: 100%;
+}
+input.reviewwidget[type="text"] {font-size: 18px;}
+.form-error {color: red;}
