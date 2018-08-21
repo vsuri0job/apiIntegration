@@ -309,6 +309,255 @@ jQuery(document).ready( function() {
   });
 
 
+/* GOOGLE BUSINESS API */
+        
+  // Enter an API key from the Google API Console:
+  //   https://console.developers.google.com/apis/credentials
+  
+  var apiKey = 'P2mSwM7nIh--s6GKUr_5qjXW';
+  //var apiKey = 'AIzaSyB8tgyN3rcPZN1ui_LW0jYJQugiXWro-w8';
+
+  // Enter a client ID for a web application from the Google API Console:
+  //   https://console.developers.google.com/apis/credentials?project=_
+  // In your API Console project, add a JavaScript origin that corresponds
+  // to the domain where you will be running the script.
+  
+  var clientId = '852917856253-4m3r3q5ihb9o92knp0a6nlbepmbm9qln.apps.googleusercontent.com';
+  //var clientId = '455306179471-57g8mnief9065t2kd2gdbd3v8sd0j2n4.apps.googleusercontent.com';
+
+  // Use the latest Google My Business API version
+  var gmb_api_version = 'https://mybusiness.googleapis.com/v4';
+
+  // One or more authorization scopes. Additional scopes may be desired if
+  // multiple APIs are used. Refer to the documentation for the API
+  // or https://developers.google.com/people/v1/how-tos/authorizing
+  // for details. At a minimum include the Google My Business authorization scope.
+  var scopes = 'https://www.googleapis.com/auth/plus.business.manage';
+
+  var authorizeButton = document.getElementById('authorize-button');
+  var signoutButton = document.getElementById('signout-button');
+  var accountsButton = document.getElementById('accounts-button');
+  var adminsButton = document.getElementById('admins-button');
+  var locationsButton = document.getElementById('locations-button');
+
+  var accounts = [];
+
+  function handleClientLoad() {
+    // Load the API client and auth2 library
+    gapi.load('client:auth2', initClient);
+  }
+
+  function initClient() {
+    gapi.client.init({
+        apiKey: apiKey,
+        clientId: clientId,
+        scope: scopes
+    }).then(function () {
+      // Listen for sign-in state changes.
+      gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+      // Handle the initial sign-in state.
+      updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+
+      authorizeButton.onclick = handleAuthClick;
+      signoutButton.onclick = handleSignoutClick;
+      accountsButton.onclick = handleAccountsClick;
+      adminsButton.onclick = handleAdminsClick;
+      locationsButton.onclick = handleLocationsClick;
+    });
+  }
+
+  function updateSigninStatus(isSignedIn) {
+
+    if (isSignedIn) {
+
+      $('#authorize-button').hide();
+      $('#signout-button').show();
+
+      //authorizeButton.style.display = 'none';
+      //signoutButton.style.display = 'inline-block';
+
+      accountsButton.style.display = 'inline-block';
+    
+    } else {
+      
+
+      $('#authorize-button').show();
+      $('#signout-button').hide();
+
+      //authorizeButton.style.display = 'inline-block';
+      //signoutButton.style.display = 'none';
+      
+      accountsButton.style.display = 'none';
+      adminsButton.style.display = 'none';
+      locationsButton.style.display = 'none';
+    }
+  }
+
+  function handleAuthClick(event) {
+    gapi.auth2.getAuthInstance().signIn();
+  }
+
+  function handleSignoutClick(event) {
+    gapi.auth2.getAuthInstance().signOut();
+  }
+
+  function handleAccountsClick(event) {
+
+    toastr["info"]( 'The request is in progress.', "In Progress");
+
+    var rcSocial_pages_google = '';
+
+    let user = gapi.auth2.getAuthInstance().currentUser.get();
+    let oauthToken = user.getAuthResponse().access_token;
+    let req = gmb_api_version + '/accounts';
+    let xhr = new XMLHttpRequest();
+    let p = document.createElement('p');
+
+    p.appendChild(document.createTextNode('Accounts'));
+
+    console.log(req);
+
+    xhr.responseType = 'json';
+    xhr.open('GET', req);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + oauthToken);
+
+    xhr.onload = function() {
+
+      if(xhr.status == 403) {
+
+        //toastr["warning"]( xhr.response.error.message, "Error");      
+        rcSocial_pages_google = '<div class="alert alert-danger border-0 mt-1 mb-1" role="alert">';
+        rcSocial_pages_google = rcSocial_pages_google + '<strong>Error!</strong> '+xhr.response.error.message+'</div>';
+        document.getElementById('rcSocial_pages_google').innerHTML = rcSocial_pages_google;  
+
+        return false;
+      }
+
+      console.log(xhr.response);
+
+      if (xhr.status != 200) {
+        return false;
+      }
+
+      for (let i = 0; i < xhr.response.accounts.length; i++) {
+
+        let account = xhr.response.accounts[i].name;
+
+        if (accounts.indexOf(account) === -1) {
+          accounts.push(account);
+        }
+
+        p.appendChild(document.createElement('br'));
+        p.appendChild(document.createTextNode(account));
+        p.appendChild(document.createTextNode(' accountName: ' + xhr.response.accounts[i].accountName));
+        p.appendChild(document.createTextNode(' type: ' + xhr.response.accounts[i].type));
+        p.appendChild(document.createTextNode(' role: ' + xhr.response.accounts[i].role));
+        p.appendChild(document.createTextNode(' state.status: ' + xhr.response.accounts[i].state.status));
+
+        adminsButton.style.display = 'inline-block';
+        locationsButton.style.display = 'inline-block';
+      }
+      
+      document.getElementById('rcSocial_pages_google').appendChild(p);
+    
+    };
+    
+    xhr.send();
+
+    //document.getElementById('dynamic-content').innerHTML() = 'HERE IS THE RESPONSE';
+    
+  }
+
+  function handleAdminsClick(event) {
+    let p = document.createElement('p');
+
+    p.appendChild(document.createTextNode('Admins'));
+
+    for (let i = 0; i < accounts.length; i++) {
+
+      let user = gapi.auth2.getAuthInstance().currentUser.get();
+      let oauthToken = user.getAuthResponse().access_token;
+      let xhr = new XMLHttpRequest();
+      let req = gmb_api_version + '/' + accounts[i] + '/admins';
+
+      console.log(req);
+
+      xhr.responseType = 'json';
+      xhr.open('GET', req);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + oauthToken);
+
+      xhr.onload = function() {
+
+        if (xhr.status != 200) {
+          return;
+        }
+
+        for (let j = 0; j < xhr.response.admins.length; j++) {
+
+          p.appendChild(document.createElement('br'));
+          p.appendChild(document.createTextNode(xhr.response.admins[j].name));
+          p.appendChild(document.createTextNode(' adminName: ' + xhr.response.admins[j].adminName));
+          p.appendChild(document.createTextNode(' role: ' + xhr.response.admins[j].role));
+        }
+      };
+      xhr.send();
+    }
+    document.getElementById('dynamic-content').appendChild(p);
+  }
+
+  function handleLocationsClick(event) {
+    let p = document.createElement('p');
+
+    p.appendChild(document.createTextNode('Locations'));
+
+    for (let i = 0; i < accounts.length; i++) {
+
+      let user = gapi.auth2.getAuthInstance().currentUser.get();
+      let oauthToken = user.getAuthResponse().access_token;
+      let xhr = new XMLHttpRequest();
+      let req = gmb_api_version + '/' + accounts[i] + '/locations';
+
+      xhr.responseType = 'json';
+      xhr.open('GET', req);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + oauthToken);
+
+      xhr.onload = function() {
+
+        if (xhr.status != 200 || xhr.response.locations == undefined) {
+          return;
+        }
+
+        for (let j = 0; j < xhr.response.locations.length; j++) {
+
+          p.appendChild(document.createElement('br'));
+          p.appendChild(document.createTextNode(xhr.response.locations[j].name));
+          p.appendChild(document.createTextNode(' locationName: ' + xhr.response.locations[j].locationName));
+          p.appendChild(document.createTextNode(' address.addressLines: ' + xhr.response.locations[j].address.addressLines));
+          p.appendChild(document.createTextNode(' locationState isVerified: ' + xhr.response.locations[j].locationState.isVerified));
+        }
+      };
+      xhr.send();
+    }
+    document.getElementById('dynamic-content').appendChild(p);
+  }
+
+
+  function signOutGoogle() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+
+      toastr["success"]("successfully logged out from Google.", "Success");
+
+      //console.log('User signed out.');
+      $('#signout-button').hide();
+      $('#authorize-button').show();
+    
+    });
+  }
+/* /GOOGLE BUSINESS API */
+
+
 
 /* ##### YELP API ##### */
   
@@ -493,32 +742,60 @@ $(document).on('click', '.facebook_add_page_form_btn', function(event){
     }); 
 });
 
+$(document).on('click', '.google_add_page_form_btn', function(event){
 
-$(document).on('click', '.get_google_reviews', function( event ){
+  event.preventDefault();
+
+    post_id = 20;
+
+    //if using the form the serialize the form data
+    var form_action = jQuery("#google_add_page_form").attr('action');
+    var serializedData = jQuery("#google_add_page_form").serialize();
+
     jQuery.ajax({
-      
-      type : "get",
-      dataType : "json",
-      url : 'http://reviewchamp.net/login/manage/update-google-reviews',
-      statusCode: {            
-        500: function() {
-            alert(" 500 data still loading");
-            console.log('500 ');
-        }
-      },
+       type : "post",
+       dataType : "json",
+       url : form_action,
+       statusCode: {
+            500: function() {
+                alert(" 500 data still loading");
+                console.log('500 ');
+            }
+        },
        
-      data : {_token: CSRF_TOKEN},
+       //data : {action: "my_function", post_id : post_id},
        
-      //if using the form then use this
-      //data : serializedData,
+       //if using the form then use this
+       data : serializedData,
 
-      error: function(xhr, status, error) {
-          var err = eval("(" + xhr.responseText + ")");
-          alert(err.Message);
+       error: function(xhr, status, error) {
+          console.log(xhr);
+          console.log(status);
+          console.log(error);
       },
-      success: function(response) {
-        alert(response.msg);  
+       success: function(response) {
+
+          console.log(response.res_message);
+          
+          if ( response.res_validation_error == 1 ) {
+            $.each(response.res_message, function( index, value ) {
+              //alert( index + ": " + value );
+              toastr["warning"]( value, "Error");
+            });
+
+            return false;
+          }
+
+          if ( response.res_status == 'error' ) {
+            toastr["error"]( response.res_message, "error");
+          }
+
+          if ( response.res_status == 'success' ) {
+            jQuery("#google_add_page_modal").modal('hide');
+            toastr["success"]( response.res_message, "success");
+
+            setTimeout(function(){ window.location.reload(); }, 2000);
+          }
       },
     }); 
-  event.preventDefault();
 });

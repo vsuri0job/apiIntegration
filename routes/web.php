@@ -85,6 +85,8 @@ Route::group(['middleware' => ['auth','active', 'checksubscribed']], function()
 	
 	Route::post('manage/add-facebook-page-manually', 'ManageSiteController@add_facebook_page'); //TEST ROUTE
 	Route::post('manage/add-google-page-manually', 'ManageSiteController@add_google_page'); //TEST ROUTE
+	Route::post('manage/add-google-page-location', 'ManageSiteController@add_google_location'); //TEST ROUTE
+	Route::post('manage/update-google-reviews', 'ManageSiteController@updateGoogleLocationReviews'); //TEST ROUTE
 	
 	Route::get('manage_site', 'ManageSiteController@index');
 	Route::get('login_google', 'ManageSiteController@login_google')->name( 'login_google' );

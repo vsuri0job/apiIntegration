@@ -99,14 +99,17 @@ class SitereviewController extends Controller
             $data12['facebookcount']=$i;
           }*/
           
-          //yelpreview
+          //yelpreview          
           $data12['slug']=$slug;
           $yelp=Socialmedia::where('name', 'yelp')->value('id');          
           $token=Social::where('user_id', $slug->id)->where('social_id', $yelp)->where('active', 'yes')->value('api');
-          $token= env( 'YELP_KEY' );
+          $token= env( 'YELP_KEY' );          
           // $businessid = Social::where('user_id', $slug->id, true)->where('social_id', $yelp)->where('active', 'yes')->value('secret');
-          $social_yelp=Social::where('user_id',$slug->id)->where('social_id', $yelp)->where('active', 'yes')->get()->first();          
-          $businessid = $social_yelp->url;          
+          $social_yelp=Social::where('user_id',$slug->id)->where('social_id', $yelp)->where('active', 'yes')->get()->first();
+          $businessid = '';
+          if( $social_yelp ){
+            $businessid = $social_yelp->url;            
+          }
           // $social_yelp=Social::where('user_id',$data['id'])->where('social_id', '3')->where('active', 'yes')->get();          
           $url='https://api.yelp.com/v3/businesses/'.$businessid.'/reviews';
           $response=$this->curl($url, $token);          

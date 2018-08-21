@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\Validator;
@@ -8,10 +9,13 @@ use App\Settings;
 use App\Review;
 use App\Company;
 use App\Social;
+use App\Rating;
 use App\Socialmedia;
 use Illuminate\Support\Facades\Input;
 use Google_Client;
 use Google_Service;
+use Google_Service_MyBusiness;
+use Google_Service_MyBusiness_ListAccountsResponse;
 
 class ManageSiteController extends Controller
 {
@@ -47,9 +51,9 @@ class ManageSiteController extends Controller
         $data['social_home_advisor']=Social::where('user_id',$user_id)->where('social_id', '7')->where('active', 'yes')->get();
         $data['social_yelp']=Social::where('user_id',$user_id)->where('social_id', '3')->where('active', 'yes')->get();
         $data['social_review_champ']=Social::where('user_id',$user_id)->where('social_id', '10')->where('active', 'yes')->get();
-
+        $data['social_google_pcount']=Rating::where('customer_id',$user_id)->where('review_type', '2')->get();        
         //dd($data['social_fb']);
-
+        $data['hasGoogleToken'] = Auth::user()->google_access_token ? true: false;
         $data['include_js'] = 'custom';
         $data['include_css'] = 'custom';
 
@@ -89,19 +93,172 @@ class ManageSiteController extends Controller
         $access_token = Auth::user()->google_access_token;
         $refresh_token = Auth::user()->google_refresh_token;
         $client = $this->getGoogleClient();
-        $client->setAccessToken($access_token);        
+        $client->setAccessToken($access_token);
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken( $refresh_token );
             $access_token = $client->getAccessToken();
             $opt = array();
-            $opt[ 'google_access_token' ] = json_encode($access_token);            
+            $opt[ 'google_access_token' ] = json_encode($access_token);
             $user_id=Auth::user()->id;
             User::where('id', $user_id)
-                  ->update($opt);            
+                  ->update($opt);
         }
-        $service = new Google_Service_Oauth2($client);
-        $analytics = new Google_Service_Analytics($client);
+        $service = new Google_Service_MyBusiness($client);
+        $gList = $service->accounts->listAccounts();        
+        $gAList = $gList->accounts;
+        $gADataBPages = array();
+        $gADataBPagesLocations = array();
+        foreach ($gAList as $key => $value) {
+            $gADataBPages[ $value->name ] = $value->accountName;
+            $locations = $service->accounts_locations->listAccountsLocations( $value->name );
+            dd( $locations );
+            $gADataBPagesLocations[ $value->name ] = array();
+            foreach( $locations->locations as $lk => $lData ){
+                $gADataBPagesLocations[ $value->name ][ $lData->name ] = $lData->locationName;                
+            }
+        }
+        $out = array();
+        $out[ 'bPages' ] = $gADataBPages;
+        $out[ 'pagesLocation' ] = $gADataBPagesLocations;
+        echo json_encode($out);
+        exit;
     }
+
+    public function add_google_location( Request $request )
+    {
+        $user_id=Auth::user()->id;
+        $res_data = array();
+        $res_data['res_validation_error'] = 0;
+        $data=$request->all();
+
+        $messages = [
+            'without_spaces' => 'Can not use Place ID/Business Key/Secret Key without space',
+            'without_spaces_api_id' => 'Can not use API ID without space',
+        ];
+
+        $validation=Validator::make($data, [
+            'pagename'=>'string|max:255',
+            'socialurl'=>'string|max:255',
+            'social_page_review_url'=>'string|max:255'
+        ],$messages);
+
+        if($validation->fails())
+        {
+            $res_data['res_validation_error'] = 1;
+            $res_data['res_message'] = $validation->messages();
+            $res_data['res_status'] = 'error';
+        }
+        else
+        {
+
+                # code...
+                $social_count = Social::where('user_id', $user_id)->where('social_id', 2)->first();
+
+                //dd($social_count);
+
+                if ( !$social_count ) {
+                    $pagename = trim($data['gbpagename']);
+                    $socialurl = trim($data['business-name']);
+                    $access_token = Auth::user()->google_access_token;
+                    $refresh_token = Auth::user()->google_refresh_token;
+                    $client = $this->getGoogleClient();
+                    $client->setAccessToken($access_token);
+                    if ($client->isAccessTokenExpired()) {
+                        $client->fetchAccessTokenWithRefreshToken( $refresh_token );
+                        $access_token = $client->getAccessToken();
+                        $opt = array();
+                        $opt[ 'google_access_token' ] = json_encode($access_token);
+                        $user_id=Auth::user()->id;
+                        User::where('id', $user_id)
+                              ->update($opt);
+                    }
+                    $service = new Google_Service_MyBusiness($client);
+                    $gList = $service->accounts->get( $socialurl );
+                    echo json_encode( $gList );
+                    exit;
+                    # code...
+                    $social_page_review_url = trim($data['business-name-location']);                    
+                    $social_create = Social::create([
+                                'social_id' => '2',
+                                'user_id'   => $user_id,
+                                'pagename'  => $pagename,
+                                'socialurl' => $socialurl,
+                                'social_page_review_url' => $social_page_review_url, //addd
+                                'url'       => $socialurl,
+                                'page_id'       => rand(1, 1000000)
+                    ]);
+                    if( $social_page_review_url ){                        
+                        $this->fetchGoogleLocationReviews( $social_page_review_url );
+                    }
+                }                
+        }
+
+        return redirect( 'manage/connect-social-pages' );
+        exit;
+        // echo json_encode($res_data);
+    }
+
+    public function fetchGoogleLocationReviews( $locationId ){
+        $ratingStack = array();
+        $ratingStack[ 'ONE' ] = 1;
+        $ratingStack[ 'TWO' ] = 2;
+        $ratingStack[ 'THREE' ] = 3;
+        $ratingStack[ 'FOUR' ] = 4;
+        $ratingStack[ 'FIVE' ] = 5;
+        $ratingStack[ 'STAR_RATING_UNSPECIFIED' ] = null;
+        
+        $access_token = Auth::user()->google_access_token;
+        $refresh_token = Auth::user()->google_refresh_token;
+        $client = $this->getGoogleClient();
+        $client->setAccessToken($access_token);
+        if ($client->isAccessTokenExpired()) {
+            $client->fetchAccessTokenWithRefreshToken( $refresh_token );
+            $access_token = $client->getAccessToken();
+            $opt = array();
+            $opt[ 'google_access_token' ] = json_encode($access_token);
+            $user_id=Auth::user()->id;
+            User::where('id', $user_id)
+                  ->update($opt);
+        }
+        $service = new Google_Service_MyBusiness($client);
+        $reviews = $service->accounts_locations_reviews->listAccountsLocationsReviews( $locationId );        
+        $ttlReviews = $reviews->totalReviewCount;
+        $fetchedReviewsCount = count( $reviews->reviews );
+        $insertReviewsStack = array();
+        $nPageToken = isset( $reviews->nextPageToken ) ? $reviews->nextPageToken : false;
+        do {
+            foreach ($reviews->reviews as $rKey => $rData) {
+                $reviewRating = $rData->starRating;
+                if( isset( $ratingStack[ $rData->starRating ] )  ){
+                    $reviewRating = $ratingStack[ $rData->starRating ];
+                }
+                $auth_name = '';
+                if( isset( $rData->reviewer->displayName ) ){
+                    $auth_name = $rData->reviewer->displayName;
+                }
+                $cdate = date('Y-m-d', strtotime( $rData->createTime ));                
+                $data = [
+                  'customer_id' => Auth::user()->id,
+                  'comment' => $rData->comment,
+                  'rating' => $reviewRating,
+                  'name' => $auth_name,
+                  'user_url' => $rData->reviewId,
+                  'email' => '',
+                  'contact' => '',
+                  'created'=>$cdate,
+                  'updated'=>$rData->updateTime,
+                  'review_type'=>2,
+                ];                
+                $rating = Rating::create( $data );
+            }
+            if($nPageToken){
+                $reviews = $service->accounts_locations_reviews->listAccountsLocationsReviews( $locationId, array( 'pageToken' => $nPageToken ));
+                $nPageToken = isset( $reviews->nextPageToken ) ? $reviews->nextPageToken : false;
+                $fetchedReviewsCount += count( $reviews->reviews );
+            }
+        } while ($fetchedReviewsCount < $ttlReviews);
+    }
+
     /*
     *Method: index
     *Parameter: Null
@@ -622,5 +779,27 @@ class ManageSiteController extends Controller
         }
 
         echo json_encode($res_data);
+    }
+
+    public function updateGoogleLocationReviews(){
+        $out = array();
+        $out[ 'success' ] = 0;
+        $user_id=Auth::user()->id;       
+        $social_det = Social::where('user_id', $user_id)->where('social_id', 2)->first();
+        $out[ 'msg' ] = 'Google page not found!';
+        if( $social_det ){            
+            $location = $social_det->social_page_review_url;
+            $out[ 'msg' ] = 'Google page location not found!';
+            if(  $location ){
+                $out[ 'success' ] = 1;
+                $social=Rating::where('customer_id',$user_id)
+                                ->where('review_type', 2)
+                                ->delete();
+                $this->fetchGoogleLocationReviews( $location );
+                $out[ 'msg' ] = 'Google page reviews fetched!';
+            }
+        }
+        echo json_encode($out);
+        exit;
     }
 }

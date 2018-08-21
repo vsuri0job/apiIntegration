@@ -144,17 +144,26 @@ $user_id=Auth::user()->id;
 
           <?php if(count($social_google) == 0) { ?>
 
-	          <button data-toggle="modal" data-target="#google_add_page_modal" type="button" class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff"> 
+	          <button data-toggle="modal" data-target="#google_add_page_modal" type="button" 
+              class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff; display: none;"> 
 	            <i class="fa fa-plus"></i> Add My Business Listing Manually
 	          </button>
+            <?php if( $hasGoogleToken ){ ?>            
+              <button   id="get-accounts-button" 
+                        type="button" class="btn btn-min-width ml-1 pull-right" 
+                        style="color:#ff6275; background: #fff; display: block;"><i class="fa fa-plus"></i> Get My Businesses
+              </button>
+            <?php } else { ?>
+            <a  id="authorize-button" 
+                type="button" class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff"
+                href="{{ url( 'login_google' ) }}"
+                > 
+              <i class="fa fa-plus"></i> Connect to Google+
+            </a>
 
-	          <button id="authorize-button" type="button" class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff"> 
-	            <i class="fa fa-plus"></i> Connect to Google+
-	          </button>
-
-	          <button id="accounts-button" style="display: none;" type="button" class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff;"><i class="fa fa-plus"></i> Get My Businesses
-	          </button>
-
+            <button id="accounts-button" style="display: none;" type="button" class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff;"><i class="fa fa-plus"></i> Get My Businesses
+            </button>
+            <?php } ?>
           <?php } else { ?>
 
             <button onclick="signOutGoogle()" id="signout-button" type="button" class="btn btn-min-width ml-1 pull-right" style="color:#ff6275; background: #fff;"><i class="fa fa-plus"></i> Logout from Google+
@@ -177,7 +186,7 @@ $user_id=Auth::user()->id;
           <div id="dynamic-content"> </div>
 
           @php $i=1 @endphp
-          @php $page_count=0 @endphp
+          @php $page_count= count( $social_google_pcount ) ; @endphp
           @foreach($social_google as $soc)
 
             <!--  -->
@@ -200,12 +209,14 @@ $user_id=Auth::user()->id;
                   <i class="fa fa-google white font-medium-5"></i>&nbsp;&nbsp;{{$soc->pagename}}
                 </a>
                 
-                <a  item-id ="{{ $soc->page_id }}" access-token = "{{ $soc->access_token }}" class="btn btn-social btn-outline-facebook btn-xs pull-right get_fb_reviews"><span class="fa fa-google"></span> Fetch the page reviews/ratings
+                <a  item-id ="{{ $soc->page_id }}" 
+                  access-token = "{{ $soc->access_token }}" class="btn btn-social btn-outline-facebook btn-xs pull-right get_google_reviews"><span class="fa fa-google"></span> Fetch the page reviews/ratings
                 </a>
 
               </div>
                   
-              <div id="accordion_google_{{ $page_count }}" role="tabpanel" aria-labelledby="heading_google_{{ $page_count }}" class="collapse {{ $soc->page_id }} {{ $_in }}" aria-expanded="{{ $_status }}">
+              <div id="accordion_google_{{ $page_count }}" style="display: none;" 
+                role="tabpanel" aria-labelledby="heading_google_{{ $page_count }}" class="hide collapse {{ $soc->page_id }} {{ $_in }}" aria-expanded="{{ $_status }}">
                 <div class="card-content">
                   <div class="card-body p-0-25 reviews-cards-container" id="{{ $soc->page_id }}">
                     <div class="alert alert-warning border-0 mt-1 mb-1" role="alert">
@@ -669,4 +680,85 @@ $user_id=Auth::user()->id;
   </div>
 </div>
 
+
+    <!-- Google MODAL -->
+    <div  class="modal fade text-left" id="google_choose_business" 
+          tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">          
+          <div class="modal-header">
+            <h4 class="modal-title text-center" id="myModalLabel2"><i class="fa fa-road2"></i> Google Select Business</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+
+          <form id="google_add_page_form" action="{{ url('manage/add-google-page-location') }}" method="POST">
+            <div class="modal-body">
+              <h5><i class="fa fa-arrow-right"></i> Select Business Location for reviews</h5>           
+                {{ csrf_field() }}
+                <div class="modal-body">
+                  <label>Google Business Name: </label>
+                  <div class="form-group position-relative has-icon-left">
+                    <select name="business-name" id="business-name" class="form-control"></select>
+                  </div>
+
+                  <label>Google Location Name: </label>
+                  <div class="form-group position-relative has-icon-left">
+                    <select name="business-name-location" id="business-name-location" class="form-control"></select>
+                  </div>
+                </div>
+                <input type="hidden" name="gbpagename" id="gbpagename" value="">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Cancel</button>
+              <input type="submit" class="btn btn-outline-primary google_add_page_form_btn" value="Submit Google Page">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- /Google MODAL -->
+
+  </div>
+</div>
+<script type="text/javascript">
+/* google scripts */
+var business_names = [];
+var business_locations = [];
+$( document ).ready( function(){
+  $( "#get-accounts-button" ).on( 'click', function( event ){
+    event.preventDefault();
+    $.get("{{ url( 'google_business_list' ) }}", function( data ){
+      business_names = data.bPages;
+      business_locations = data.pagesLocation;
+      $( "#business-name option" ).remove();
+      $.each(business_names, function(key, value) {
+            $("#business-name-location").attr( 'disabled', true );
+            $('#business-name').append($("<option></option>")
+                          .attr("value",key)
+                          .text(value));             
+      });
+      $( "#business-name" ).trigger( 'change' );
+      $("#google_choose_business").modal();
+    }, 'json' );
+  });
+
+  $('#business-name').on( 'change', function( event ){
+    event.preventDefault();    
+    $("#business-name-location").attr( 'disabled', true );
+    $("#business-name-location option" ).remove();
+    let selectedBpage = $('#business-name option:selected').val();
+    $("#gbpagename").val(selectedBpage);
+    if( selectedBpage in business_locations ){
+      $.each(business_locations[ selectedBpage ], function(key, value) {
+        $('#business-name-location').append($("<option></option>")
+                      .attr("value",key)
+                      .text(value)); 
+      });
+    }
+    $("#business-name-location").attr( 'disabled', false );
+  });
+});
+</script>
 @endsection 
